@@ -1,0 +1,100 @@
+import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+import { statusCodes } from "../config";
+import User from "../models/user.model";
+import { logger } from "../utils/logger";
+import { IUser } from "../types";
+import { generateRefreshToken } from "../utils/token.generator";
+import { config } from "../config";
+import { Types } from "mongoose";
+
+type userData = Pick<IUser, "email" | "name" | "password">;
+
+export const registerUserhandler = async (req: Request, res: Response) => {
+  const { name, email, password } = req.body as userData;
+
+  if ([name, email, password].some((field) => field.trim() === "")) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ message: "all fields are required" });
+  }
+
+  const existedUser = await User.findOne({ email });
+
+  if (existedUser) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ message: "user already exists with this email" });
+  }
+
+  User.create({
+    name,
+    email,
+    password,
+  })
+    .then((newUser) => {
+      logger.info("new user registered", {
+        name: newUser.name,
+        email: newUser.email,
+      });
+      return res
+        .status(statusCodes.CREATED)
+        .json({ message: "new user has been created" });
+    })
+    .catch((error) => {
+      logger.error("error while creating new user");
+      throw new Error(error);
+    });
+};
+
+export const loginUserHandler = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body as userData;
+
+    const user = await User.findOne({ email }).select("-__v").exec();
+    if (!user) {
+      return res.status(statusCodes.NOT_FOUND).json({
+        message: "user not found, please register first.",
+      });
+    }
+
+    const isPasswordMatched = await bcrypt.compare(
+      password,
+      user.password as string
+    );
+    if (!isPasswordMatched) {
+      return res.status(statusCodes.UNAUTHORIZED).json({
+        message: "invalid password",
+      });
+    }
+
+    const refreshToken = generateRefreshToken(
+      user._id as Types.ObjectId,
+      user.email
+    );
+
+    const safeUser = {
+      id: user._id,
+      email: user.email,
+      createdAt: user.createdAt,
+    };
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: config.NODE_ENV === "production",
+    });
+
+    logger.info(`${safeUser.email} just logged in`);
+
+    return res.status(statusCodes.OK).json({
+      message: "user logged in successfully",
+      user: safeUser,
+    });
+  } catch (error: any) {
+    logger.error(error);
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "something went wrong during login",
+    });
+  }
+};
