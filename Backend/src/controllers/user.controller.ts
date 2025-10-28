@@ -1,3 +1,6 @@
+/**
+ * imports
+ */
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { statusCodes } from "../config";
@@ -10,6 +13,19 @@ import { Types } from "mongoose";
 
 type userData = Pick<IUser, "email" | "name" | "password">;
 
+/**
+ * workflow :
+ * 1. user first provides their name, unique email and password.
+ * 2. validates that all fields are non-empty.
+ * 3. checks whether usr already exists with the same email id.
+ * 4. if not, creates a new user document in database.
+ * 5. logs success or error events accordingly and sends the appropriate http response.
+ *
+ *
+ * @param req - request object containing user data for registration.
+ * @param res - response object containign http status code and user data.
+ * @returns promise.
+ */
 export const registerUserhandler = async (req: Request, res: Response) => {
   const { name, email, password } = req.body as userData;
 
@@ -47,6 +63,19 @@ export const registerUserhandler = async (req: Request, res: Response) => {
     });
 };
 
+/**
+ * workflow :
+ * 1. user first provides their email and password.
+ * 2. checks if user does exist with the provided email in database.
+ * 3. if exist then match the hashed passwords.
+ * 4. if password matches, a JWT token and a cookie is created with the email and id as payload.
+ * 5. logs success or error events accordingly and sends the appropriate http response.
+ * 
+ * 
+ * @param req - request object containing user data for logging in.
+ * @param res - response object containign http status code and user data.
+ * @returns promise.
+ */
 export const loginUserHandler = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as userData;

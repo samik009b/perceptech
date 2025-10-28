@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./App.css"
+import './App.css';
 
 // Types
 interface Message {
@@ -32,15 +32,13 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
 
-  // Auth states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const API_BASE = 'http://localhost:3000'; // Base URL
-
+  const API_BASE = 'http://localhost:3000';
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -73,7 +71,6 @@ const App: React.FC = () => {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // After registration, auto-login
       await handleLogin();
     } catch (error: any) {
       setAuthError(error.message);
@@ -86,7 +83,6 @@ const App: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log('Calling:', `${API_BASE}/user/login`); // DEBUG
       const response = await fetch(`${API_BASE}/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,11 +96,9 @@ const App: React.FC = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      console.log('Login response:', data); // DEBUG
-
       const userData: User = {
         id: data.user.id,
-        name: email.split('@')[0], // Extract name from email or use data.user.name if available
+        name: email.split('@')[0],
         email: data.user.email,
         createdAt: data.user.createdAt,
       };
@@ -121,12 +115,9 @@ const App: React.FC = () => {
   const loadChatHistory = async () => {
     if (!user) return;
     try {
-      console.log('Loading history from:', `${API_BASE}/api/chat/history`); // DEBUG
       const response = await fetch(`${API_BASE}/api/chat/history`, {
         credentials: 'include',
       });
-
-      console.log('History response status:', response.status); // DEBUG
 
       const data = await response.json();
 
@@ -139,9 +130,7 @@ const App: React.FC = () => {
           }))
         );
       }
-    } catch (error) {
-      console.error('Failed to load chat history:', error);
-    }
+    } catch (error) {}
   };
 
   const handleSendMessage = async () => {
@@ -161,7 +150,6 @@ const App: React.FC = () => {
     setMessages((prev) => [...prev, newMessage]);
 
     try {
-      console.log('Sending message to:', `${API_BASE}/api/chat`); // DEBUG
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: {
@@ -170,8 +158,6 @@ const App: React.FC = () => {
         credentials: 'include',
         body: JSON.stringify({ enquiry: userMessage }),
       });
-
-      console.log('Chat response status:', response.status); // DEBUG
 
       const data = await response.json();
 
@@ -272,7 +258,7 @@ const App: React.FC = () => {
                     className="form-control"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyUp={handleKeyPress}
                     required
                   />
                 </div>
@@ -283,7 +269,7 @@ const App: React.FC = () => {
                     className="form-control"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyUp={handleKeyPress}
                     required
                   />
                 </div>
@@ -294,7 +280,7 @@ const App: React.FC = () => {
                     className="form-control"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyUp={handleKeyPress}
                     required
                   />
                 </div>
@@ -315,7 +301,7 @@ const App: React.FC = () => {
                     className="form-control"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyUp={handleKeyPress}
                     required
                   />
                 </div>
@@ -326,7 +312,7 @@ const App: React.FC = () => {
                     className="form-control"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyUp={handleKeyPress}
                     required
                   />
                 </div>

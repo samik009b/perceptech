@@ -7,6 +7,20 @@ interface TokenPayload extends JwtPayload {
   userId: Types.ObjectId;
   email?: string;
 }
+
+/**
+ * workflow :
+ * 1. checks if there are any tokens in the authorization header or cookie.
+ * 2. if it exists then it is verified by matching with the token secret.
+ * 3. if the token is valid then the payload is decoded and sent as reqUser.
+ * 4. now then next function can access the payload.
+ * 
+ * 
+ * @param req request object that contains the token created by the user while logging in.
+ * @param res response object containing message to the user and http status codes.
+ * @param next nextFunction object to call the next function / middleware.
+ * @returns promise
+ */
 const validateToken = async (
   req: Request,
   res: Response,
@@ -22,9 +36,6 @@ const validateToken = async (
     token = req.cookies.refreshToken;
   }
 
-  // DEBUG: Log the token
-  console.log("Cookie refreshToken:", req.cookies?.refreshToken);
-  console.log("Token being validated:", token);
 
   if (!token) {
     throw new Error("refresh token is not found or malformed");

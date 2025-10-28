@@ -1,15 +1,18 @@
 import { Schema, model } from "mongoose";
+import { IMessage } from "../types";
 
-const messageSchema = new Schema({
+const messageSchema = new Schema<IMessage>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },
   enquiry: {
     type: String,
+    required: true,
   },
   response: {
     type: String,
+    required: true,
   },
   createdAt: {
     type: Date,
@@ -17,4 +20,4 @@ const messageSchema = new Schema({
   },
 });
 
-export default model("Messages", messageSchema, "Messages");
+export default model<IMessage>("Messages", messageSchema, "Messages");

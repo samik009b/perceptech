@@ -1,11 +1,26 @@
+/**
+ * imports
+ */
 import { Request, Response } from "express";
 import { getGroqChatCompletion } from "../utils/response";
 import { statusCodes } from "../config";
 import Message from "../models/message.model";
+/**
+ * workflow :
+ * 1. extracts the loged-in user's id and the prompt to be send to the chatbot.
+ * 2. checks if the user id is available and the prompt is non-empty.
+ * 3. checks if the query is relevant to the chatbot's role or not.
+ * 4. fetches the chatbot's reply and sends it to the user.
+ *
+ *
+ * @param req request object containing JWT token created by the logged-in user.
+ * @param res response object containing chatbot response.
+ * @returns promise .
+ */
 
 export const apiResponseHandler = async (req: Request, res: Response) => {
   try {
-    const userId = req.requestUser?.userId; // assuming middleware attaches this
+    const userId = req.requestUser?.userId;
     const enquiry: string = req.body.enquiry;
 
     if (!userId || enquiry.trim() === "") {
@@ -41,6 +56,18 @@ export const apiResponseHandler = async (req: Request, res: Response) => {
     });
   }
 };
+
+/**
+ * workflow :
+ * 1. extracts the loged-in user's id.
+ * 2. checks if the user id is available in the database.
+ * 3. fetches the chat history of the user with the chatbot from the database.
+ *
+ * 
+ * @param req request object containing JWT token created by the logged-in user.
+ * @param res response object containing chatbot response.
+ * @returns promise .
+ */
 
 export const getChatHistory = async (req: Request, res: Response) => {
   try {

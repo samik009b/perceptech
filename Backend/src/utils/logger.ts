@@ -1,6 +1,11 @@
 import winston from "winston";
 import { config } from "../config/index";
 
+/**
+ * winston logger configuration which is used for logging purpose.
+ * disabled in production environment.
+ */
+
 const { combine, timestamp, json, errors, align, printf, colorize } =
   winston.format;
 

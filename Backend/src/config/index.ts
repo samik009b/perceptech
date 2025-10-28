@@ -2,6 +2,9 @@ import { config as conf } from 'dotenv';
 import ms from 'ms';
 conf();
 
+/**
+ * exporting the environment variables
+ */
 export const config = Object.freeze({
   MONGO_URI: process.env.MONGO_URI || '',
   PORT: process.env.PORT || 3000,
@@ -14,6 +17,9 @@ export const config = Object.freeze({
   API_KEY: process.env.API_KEY,
 });
 
+/**
+ * exporting http status codes
+ */
 export const statusCodes = Object.freeze({
   OK: 200,
   CREATED: 202,
