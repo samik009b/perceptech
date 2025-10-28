@@ -1,7 +1,7 @@
 # 🧠 Precep-Tech Backend
 
-Backend API for the Precep-Tech project — built with **Node.js**, **Express**, **TypeScript**, and **MongoDB**.  
-This service handles user authentication, chat interactions, and message storage with integrated Swagger API documentation.
+Percep-Tech project — built with **Node.js**, **Express**, **TypeScript**, **MongoDB** and **React JS**. 
+This service handles user authentication, chat interactions, and message storage with a React-made interface.
 
 ---
 
@@ -18,7 +18,7 @@ This service handles user authentication, chat interactions, and message storage
 ## 🛠️ Tech Stack
 
 - **Runtime:** Node.js  
-- **Framework:** Express  
+- **Framework:** Express, React JS 
 - **Language:** TypeScript  
 - **Database:** MongoDB (via Mongoose)  
 - **Environment Management:** dotenv  
